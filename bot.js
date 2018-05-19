@@ -21,4 +21,4 @@ InitCommands(bot);
 
 
 // THIS  MUST  BE  THIS  WAY
-bot.login(process.env.BOT_TOKEN);//process.env.BOT_TOKEN
+bot.login(process.env.BOT_TOKEN);//config[0].Token);//process.env.BOT_TOKEN

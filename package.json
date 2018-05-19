@@ -13,6 +13,7 @@
     "mathjs": "^4.2.2",
     "opusscript": "0.0.6",
     "request": "2.81.0",
+    "websocket": "^1.0.26",
     "ytdl-core": "^0.20.4"
   }
 }
