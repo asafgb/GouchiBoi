@@ -8,7 +8,7 @@ var AddedToListEnable=true;
 //var configSetting = require('./configSetting.json')
 var configSetting = {
     "BotChannelId":"447377262854275072",
-    "BotChannelEnable":true
+    "BotChannelEnable":false
 
 };
 //var BotChannelId= "447377262854275072";
