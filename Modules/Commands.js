@@ -1,11 +1,11 @@
 const Math = require('mathjs');
 const Discord = require('discord.js');
-var config = require('./ConfigBot');
+//var config = require('./ConfigBot');
 var YTDL = require('ytdl-core');
 var Gamearray =[];
 var CommandList=[];
 var AddedToListEnable=true;
-var configSetting = require('./configSetting')
+var configSetting = require('./configSetting.json')
 //var BotChannelId= "447377262854275072";
 //var BotChannelEnable= true;
 var servers={};

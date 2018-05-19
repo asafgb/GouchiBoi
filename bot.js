@@ -10,7 +10,7 @@ bot.login("");*/
 //const websocket = require('websocket.js');
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-var config = require('./Modules/ConfigBot.json');
+//var config = require('./Modules/ConfigBot.json');
 const InitCommands = require('./Modules/Commands');
 
 
