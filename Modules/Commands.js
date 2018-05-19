@@ -5,7 +5,12 @@ var YTDL = require('ytdl-core');
 var Gamearray =[];
 var CommandList=[];
 var AddedToListEnable=true;
-var configSetting = require('./configSetting.json')
+//var configSetting = require('./configSetting.json')
+var configSetting = {
+    "BotChannelId":"447377262854275072",
+    "BotChannelEnable":true
+
+};
 //var BotChannelId= "447377262854275072";
 //var BotChannelEnable= true;
 var servers={};
