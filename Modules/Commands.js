@@ -1,13 +1,19 @@
 const Math = require('mathjs');
 const Discord = require('discord.js');
-var config = require('./Config');
+var config = require('./ConfigBot');
 var Gamearray =[];
 var CommandList=[];
 var AddedToListEnable=true;
+var configSetting = require('./configSetting')
 var BotChannelId= "447377262854275072";
 var BotChannelEnable= true;
 
 var prefix= config[0].cmdPrefix;//process.env.Prefix
+
+function GenerateColor()
+{
+    return '#'+Math.floor(Math.random()*16777215).toString(16);
+}
 
 // Command Area
 function InitHelpList()
@@ -15,6 +21,7 @@ function InitHelpList()
     var ClassName ="configuration"
     JsonCreator(ClassName,"config")
     JsonCreator(ClassName,"getconfig")
+    JsonCreator(ClassName,"helpconfig")
 
      ClassName ="Help"
      JsonCreator(ClassName,"help")
@@ -36,7 +43,19 @@ function InitHelpList()
 
 function InitCommands(bot) {
 
+
     InitHelpList();
+
+    bot.on('guildMemberAdd', function(member)  {
+      member.guild.channels.find("name","bot_only").sendMessage(member.toString()+" Welcome Little Bitch");
+
+      member.addRole(member.guild.roles.find("name","Melanie Trump"))
+      });
+
+    bot.on('ready', () => {
+        bot.user.setGame("try "+prefix+"help")
+        console.log('I am ready!');
+      });
 
 
     bot.on('message', message => {
@@ -71,7 +90,7 @@ function InitCommands(bot) {
             }
 
             // If there channel for bot
-            if(message.channel.id != BotChannelId && BotChannelEnable){
+            if(message.channel.id != configSetting.BotChannelId && configSetting.BotChannelEnable){
                 message.reply("not in the right channel");
                 return ;
             }
@@ -126,10 +145,23 @@ function JsonCreator(name,value)
 
  function ConfigBot(content,message)
  {
-    // !!config SpecificChannel:true BotChannelId:1212121
     var arrayContent = content.split(' ');
     var msg = "";
 
+    if (arrayContent[0] === 'helpconfig') {
+        msg+="\nSetting are: \n";
+        msg+= "BotChannelEnable:(true/false)\n";
+        msg+= "BotChannelId:(Channel's ID the bot will answer for)\n\n";
+
+        msg+= "Usages:\n";
+        msg+="example (more than 1 attribute at once): \n\t";
+        msg+=prefix+"config BotChannelEnable:"+configSetting.BotChannelEnable + " BotChannelId:"+configSetting.BotChannelId+"\n\n";
+
+        msg+="example: (1 attribute at once): \n\t";
+        msg+=prefix+"config BotChannelId:"+configSetting.BotChannelId+"\n\n"
+
+    }
+    else
     if (arrayContent[0] === 'config') {
         
         for(var i =1;i < arrayContent.length;i++)
@@ -138,23 +170,27 @@ function JsonCreator(name,value)
 
             if(text[0]=== 'BotChannelEnable')
             {
-                BotChannelEnable = (text[1].toLowerCase() === 'true');
-                msg+="The BotChannelEnable Configurate to : "+BotChannelEnable +"\n";
+                configSetting.BotChannelEnable = (text[1].toLowerCase() === 'true');
+                msg+="The BotChannelEnable Configurate to : "+configSetting.BotChannelEnable +"\n";
                 
             }
             if(text[0]=== 'BotChannelId')
             {
-                BotChannelId = text[1];
-                msg+="The BotChannelId Configurate to : "+BotChannelId+"\n";
+                configSetting.BotChannelId = text[1];
+                msg+="The BotChannelId Configurate to : "+configSetting.BotChannelId+"\n";
             }
+        }
+        if(msg.length===0)
+        {
+            message.reply("try "+prefix +"helpconfig");
         }
         
     }
     else
     if (arrayContent[0] === 'getconfig')
     {
-        msg+="The BotChannelEnable Configurate to : "+BotChannelEnable +"\n";
-        msg+="The BotChannelId     Configurate to : "+BotChannelId     +"\n";
+        msg+="The BotChannelEnable Configurate to : "+configSetting.BotChannelEnable +"\n";
+        msg+="The BotChannelId     Configurate to : "+configSetting.BotChannelId     +"\n";
     }
 
     if(msg.length!=0)
@@ -168,14 +204,21 @@ function JsonCreator(name,value)
  function Help(content,message)
  {
     if (content === 'help') {
-        // Display in private the commands List
-        // Json of commands and data
-        //var date =new Date();
-        //date.setFullYear(1995);
-        //date.setFullYear
         var embed = new Discord.RichEmbed()
         .setDescription("These are the commands you can use")
         .setColor([114, 137, 218]);
+
+        for(var i = 0; i < CommandList.length ; i++)
+        {
+            var commands ="\n\t";
+            for(var j=0; j< CommandList[i].Command.length;j++)
+            {
+                commands+= prefix+CommandList[i].Command[j]+"\n";
+            }
+            embed.addField(CommandList[i].ModuleName,commands,false);
+        }
+        embed.setFooter("All the commands Right now");
+        embed.setThumbnail(message.author.avatarURL);
         
             /*.setColor('#ff22ff')
             .setImage("http://images5.fanpop.com/image/photos/31300000/beautiful-heart-pic-beautiful-pictures-31395948-333-500.jpg")
@@ -184,7 +227,8 @@ function JsonCreator(name,value)
             
 
             
-            message.channel.sendEmbed(embed);
+            //message.channel.sendEmbed(embed);
+            message.author.sendEmbed(embed);
         return true;
       }
       return false;
@@ -195,6 +239,11 @@ function JsonCreator(name,value)
     if (content === 'ping') {
         //message.reply('pong');
         message.channel.sendMessage("pong")
+        return true;
+    }
+    if (content === 'dping') {
+        //message.reply('pong');
+        message.author.sendMessage('pong');
         return true;
     }
     return false;

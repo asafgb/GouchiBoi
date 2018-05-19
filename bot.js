@@ -10,15 +10,11 @@ bot.login("");*/
 
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-var config = require('./Modules/Config');
+var config = require('./Modules/ConfigBot.json');
 const InitCommands = require('./Modules/Commands');
 
 
 
-bot.on('ready', () => {
-    console.log('I am ready!');
-
-});
 
 
 InitCommands(bot);
