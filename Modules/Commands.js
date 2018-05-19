@@ -2,20 +2,49 @@ const Math = require('mathjs');
 const Discord = require('discord.js');
 var config = require('./Config');
 var Gamearray =[];
+var CommandList=[];
 var AddedToListEnable=true;
-var commandList=[];
 var BotChannelId= "447377262854275072";
 var BotChannelEnable= true;
 
 var prefix= config[0].cmdPrefix;//process.env.Prefix
 
+// Command Area
+function InitHelpList()
+{
+    var ClassName ="configuration"
+    JsonCreator(ClassName,"config")
+    JsonCreator(ClassName,"getconfig")
+
+     ClassName ="Help"
+     JsonCreator(ClassName,"help")
+
+     ClassName ="Ping"
+     JsonCreator(ClassName,"ping")
+
+     ClassName ="RoleTheDice"
+     JsonCreator(ClassName,"roll")
+
+     ClassName ="Game"
+     JsonCreator(ClassName,"game!clear")
+     JsonCreator(ClassName,"game!add")
+     JsonCreator(ClassName,"game!timer [time]")
+     JsonCreator(ClassName,"game!list")
+     JsonCreator(ClassName,"game!gutigay")
+
+}
+
 function InitCommands(bot) {
+
+    InitHelpList();
+
+
     bot.on('message', message => {
         var IsCommand=false;
         var isValidCommand=false;
         var content ="";
         //var contentArray;
-
+       
         // if the bot is talking
         if(message.author.equals(bot.user)) return;
 
@@ -72,6 +101,25 @@ function InitCommands(bot) {
 
 function JsonCreator(name,value)
 {
+    var found =false;
+    for(var i = 0; i < CommandList.length ; i++)
+    {
+        if(CommandList[i].ModuleName===name)
+        {
+            CommandList[i].Command.push(value);
+            found=true;
+        }
+    }
+    if(!found)
+    {
+        var Struct = {
+            ModuleName: name,
+            Command:[value]
+        };
+        CommandList.push(Struct)
+    }
+
+    
 
 }
 
@@ -83,6 +131,7 @@ function JsonCreator(name,value)
     var msg = "";
 
     if (arrayContent[0] === 'config') {
+        
         for(var i =1;i < arrayContent.length;i++)
         {
             var text= arrayContent[i].split(':')
@@ -194,13 +243,13 @@ function JsonCreator(name,value)
     }
 
     if (arrayContent[0] === 'game!timer') {
-        if(arrayContent.length!=2)
+        var time=60;
+        if(arrayContent.length===2)
         {   
-            message.reply("miss Params");
-            return true;
+             time =arrayContent[1];
+            //message.reply("miss Params");
+            //return true;
         }
-
-        var time =arrayContent[1];
         timeoutObj = setTimeout(() => {
             message.channel.sendMessage("Times Up");
             AddedToListEnable=false;
