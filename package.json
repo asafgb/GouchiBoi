@@ -14,6 +14,7 @@
     "opusscript": "0.0.6",
     "request": "2.81.0",
     "websocket": "^1.0.26",
+    "websocket.js": "^0.1.12",
     "ws": "^5.1.1",
     "ytdl-core": "^0.20.4"
   }
