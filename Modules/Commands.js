@@ -1,18 +1,30 @@
 const Math = require('mathjs');
 const Discord = require('discord.js');
 var config = require('./ConfigBot');
+var YTDL = require('ytdl-core');
 var Gamearray =[];
 var CommandList=[];
 var AddedToListEnable=true;
 var configSetting = require('./configSetting')
 var BotChannelId= "447377262854275072";
 var BotChannelEnable= true;
+var servers={};
 
 var prefix= config[0].cmdPrefix;//process.env.Prefix
 
-function GenerateColor()
+function GenerateColor(){
+    return '#'+Math.floor(Math.random()*16777215).toString(16);}
+
+function playMusic(con,message)
 {
-    return '#'+Math.floor(Math.random()*16777215).toString(16);
+    var server =server[message.guild.id];
+    server.dispatcher =con.playStream(YTDL(server.queue[0],{filter:"audioonly"}));
+    server.queue.shift();
+    server.dispatcher.on("end",function(){
+        if(server.queue[0])
+        play(con,message);
+        else con.disconnect();
+    })
 }
 
 // Command Area
@@ -118,8 +130,7 @@ function InitCommands(bot) {
  } 
 
 
-function JsonCreator(name,value)
-{
+function JsonCreator(name,value){
     var found =false;
     for(var i = 0; i < CommandList.length ; i++)
     {
@@ -137,14 +148,10 @@ function JsonCreator(name,value)
         };
         CommandList.push(Struct)
     }
-
-    
-
 }
 
 
- function ConfigBot(content,message)
- {
+function ConfigBot(content,message) {
     var arrayContent = content.split(' ');
     var msg = "";
 
@@ -201,7 +208,7 @@ function JsonCreator(name,value)
     return msg.length != 0;
  }
 
- function Help(content,message)
+function Help(content,message)
  {
     if (content === 'help') {
         var embed = new Discord.RichEmbed()
@@ -234,7 +241,7 @@ function JsonCreator(name,value)
       return false;
  }
 
- function Ping(content,message)
+function Ping(content,message)
  {
     if (content === 'ping') {
         //message.reply('pong');
@@ -249,7 +256,7 @@ function JsonCreator(name,value)
     return false;
  }
 
- function RoleTheDice(content,message)
+function RoleTheDice(content,message)
  {
     if (content === 'roll') {
         var roll = Math.floor(Math.random(0,6)+1);
@@ -329,19 +336,52 @@ function JsonCreator(name,value)
 
 function Voice(content,message)
 {
+    var arrayContent = content.split(' ');
     var isValid=false;
-    if (content === 'join') {
-            // Only try to join the sender's voice channel if they are in one themselves
-    if (message.member.voiceChannel) {
-        message.member.voiceChannel.join()
-          .then(connection => { // Connection is an instance of VoiceConnection
-            message.reply('I have successfully connected to the channel!');
-          })
-          .catch(console.log);
-      } else {
-        message.reply('You need to join a voice channel first!');
-      }
-      isValid=true;
+    if (arrayContent[0] === 'play') {
+        if(!arrayContent[1])
+        {
+            message.channel.sendMessage("**:x:you must provide a link**");
+            isValid= true;
+        }
+        else        
+        if (!message.member.voiceChannel) {
+            message.channel.sendMessage('**:x:You need to join a voice channel first!**');
+            isValid= true;
+        }
+        else
+        {
+            if (!servers[message.guild.id])
+                servers[message.guild.id] = {
+                    queue: []
+                };
+            var server = servers[message.guild.id];
+
+            server.queue.push(arrayContent[1])
+
+            if (!message.guild.voiceConnection)
+                message.member.voiceChannel.join().then(function (con) {
+                    playMusic(con, message)
+                })
+            /*message.member.voiceChannel.join()
+            .then(connection => { // Connection is an instance of VoiceConnection
+                message.reply('I have successfully connected to the channel!');
+            })
+            .catch(console.log);*/
+        isValid=true;
+        }
+    } 
+    else
+    if (arrayContent[0] === 'skip') {
+        var server = servers[message.guild.id]
+
+        if(server.dispatcher) server.dispatcher.end();
+    }
+    else
+    if (arrayContent[0] === 'stop') {
+        var server = servers[message.guild.id]
+
+        if(message.guild.voiceConnection) message.guild.voiceConnection.disconnect();
     }
     return isValid;
 }
