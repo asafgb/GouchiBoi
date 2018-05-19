@@ -10,7 +10,7 @@ var configSetting = require('./configSetting')
 //var BotChannelEnable= true;
 var servers={};
 
-var prefix= config[0].cmdPrefix;//process.env.Prefix
+var prefix= process.env.Prefix;//config[0].cmdPrefix;//process.env.Prefix
 
 function GenerateColor(){
     return '#'+Math.floor(Math.random()*16777215).toString(16);}
