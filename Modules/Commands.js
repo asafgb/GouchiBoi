@@ -6,8 +6,8 @@ var Gamearray =[];
 var CommandList=[];
 var AddedToListEnable=true;
 var configSetting = require('./configSetting')
-var BotChannelId= "447377262854275072";
-var BotChannelEnable= true;
+//var BotChannelId= "447377262854275072";
+//var BotChannelEnable= true;
 var servers={};
 
 var prefix= config[0].cmdPrefix;//process.env.Prefix
@@ -17,7 +17,7 @@ function GenerateColor(){
 
 function playMusic(con,message)
 {
-    var server =server[message.guild.id];
+    var server =servers[message.guild.id];
     server.dispatcher =con.playStream(YTDL(server.queue[0],{filter:"audioonly"}));
     server.queue.shift();
     server.dispatcher.on("end",function(){
@@ -376,12 +376,14 @@ function Voice(content,message)
         var server = servers[message.guild.id]
 
         if(server.dispatcher) server.dispatcher.end();
+        isValid=true;
     }
     else
     if (arrayContent[0] === 'stop') {
         var server = servers[message.guild.id]
 
         if(message.guild.voiceConnection) message.guild.voiceConnection.disconnect();
+        isValid=true;
     }
     return isValid;
 }
